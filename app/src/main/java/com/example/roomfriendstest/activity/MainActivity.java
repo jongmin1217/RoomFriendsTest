@@ -1,8 +1,8 @@
 package com.example.roomfriendstest.activity;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
@@ -27,66 +27,39 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.roomfriendstest.R;
+import com.example.roomfriendstest.databinding.ActivityMainBinding;
 import com.example.roomfriendstest.recyclerview.UserAdapter;
 
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements MainView {
+public class MainActivity extends AppCompatActivity {
 
-    @BindView(R.id.imgSearch)
-    ImageView imgSearch;
-    @BindView(R.id.btnRemove)
-    ImageButton btnRemove;
-    @BindView(R.id.editSearch)
-    EditText editSearch;
-    @BindView(R.id.btnCancel)
-    Button btnCancel;
-    @BindView(R.id.textSearch)
-    TextView textSearch;
-    @BindView(R.id.userRecyclerview)
-    RecyclerView userRecyclerview;
-
-    private MainPresenter presenter;
     private int page;
     private Timer timer;
     private UserAdapter adapter;
     private InputMethodManager imm;
+
+    ActivityMainBinding binding;
+    private UserInfoViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        init();
 
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                 .permitDiskReads()
                 .permitDiskWrites()
                 .permitNetwork().build());
 
-        imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        init();
-        presenter = new MainPresenter(this, adapter);
 
-        imgSearch.setColorFilter(Color.parseColor("#919191"));
-        btnRemove.setColorFilter(Color.parseColor("#919191"));
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                removeKeybord();
-            }
-        });
-        btnRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                editSearch.setText("");
-            }
-        });
-        editSearch.addTextChangedListener(new TextWatcher() {
+        binding.editSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
@@ -101,72 +74,78 @@ public class MainActivity extends AppCompatActivity implements MainView {
             @Override
             public void afterTextChanged(final Editable editable) {
                 if (!editable.toString().equals("")) {
-                    userRecyclerview.setVisibility(View.INVISIBLE);
-                    textSearch.setVisibility(View.VISIBLE);
-                    textSearch.setText(R.string.search);
+//                    binding.userRecyclerview.setVisibility(View.INVISIBLE);
+//                    binding.textSearch.setVisibility(View.VISIBLE);
+//                    binding.textSearch.setText(R.string.search);
 
                     timer = new Timer();
                     timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
                             page = 1;
-                            presenter.userInfo(editable.toString(), page);
+                            viewModel.getUserInfo(editable.toString(), page);
 
                         }
                     }, 1000);
-                    btnRemove.setVisibility(View.VISIBLE);
+                    binding.btnRemove.setVisibility(View.VISIBLE);
                 } else {
-                    if (textSearch.getVisibility() == View.VISIBLE) {
-                        textSearch.setVisibility(View.INVISIBLE);
+                    if (binding.textSearch.getVisibility() == View.VISIBLE) {
+                        binding.textSearch.setVisibility(View.INVISIBLE);
                     }
-                    presenter.removeItem();
-                    btnRemove.setVisibility(View.INVISIBLE);
+                    //presenter.removeItem();
+                    binding.btnRemove.setVisibility(View.INVISIBLE);
                 }
             }
         });
 
     }
 
+    public void init(){
 
-    private void init() {
-        userRecyclerview.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new UserAdapter(this, this);
-        userRecyclerview.setAdapter(adapter);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            userRecyclerview.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(View view, int i, int i1, int i2, int i3) {
-                    int previousScroll = 0;
-                    if (previousScroll != i3) { removeKeybord(); }
-                    int lastVisibleItemPosition = ((LinearLayoutManager) Objects.requireNonNull(userRecyclerview.getLayoutManager())).findLastCompletelyVisibleItemPosition();
-                    int itemTotalCount = Objects.requireNonNull(userRecyclerview.getAdapter()).getItemCount() - 1;
-                    if (lastVisibleItemPosition == itemTotalCount && userRecyclerview.getAdapter().getItemCount() > 29) {
-                        presenter.userInfo(editSearch.getText().toString(), ++page);
-                    }
+        viewModel = new UserInfoViewModel();
+        viewModel.onCreate();
 
-                }
-            });
-        }
+        binding.setUserInfo(viewModel);
+        binding.setMain(this);
+        binding.setLifecycleOwner(this);
+
+        imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        binding.imgSearch.setColorFilter(Color.parseColor("#919191"));
+        binding.btnRemove.setColorFilter(Color.parseColor("#919191"));
+    }
+//    private void init() {
+//        binding.userRecyclerview.setLayoutManager(new LinearLayoutManager(this));
+//        adapter = new UserAdapter(this, this);
+//        binding.userRecyclerview.setAdapter(adapter);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            binding.userRecyclerview.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+//                @Override
+//                public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+//                    int previousScroll = 0;
+//                    if (previousScroll != i3) { removeKeybord(); }
+//                    int lastVisibleItemPosition = ((LinearLayoutManager) Objects.requireNonNull(binding.userRecyclerview.getLayoutManager())).findLastCompletelyVisibleItemPosition();
+//                    int itemTotalCount = Objects.requireNonNull(binding.userRecyclerview.getAdapter()).getItemCount() - 1;
+//                    if (lastVisibleItemPosition == itemTotalCount && binding.userRecyclerview.getAdapter().getItemCount() > 29) {
+//                        presenter.userInfo(binding.editSearch.getText().toString(), ++page);
+//                    }
+//
+//                }
+//            });
+//        }
+//    }
+
+
+    public void onBtnRemove(View view){
+        binding.editSearch.setText("");
+    }
+
+    public void onBtnCancel(View view){
+        removeKeybord();
     }
 
     private void removeKeybord() {
         assert imm != null;
-        imm.hideSoftInputFromWindow(editSearch.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(binding.editSearch.getWindowToken(), 0);
     }
 
-    @Override
-    public void screenVisible() {
-        textSearch.setVisibility(View.INVISIBLE);
-        userRecyclerview.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void noResult() {
-        textSearch.setText(R.string.noResult);
-    }
-
-    @Override
-    public void responseError() {
-        Toast.makeText(this, "너무 많이 요청하였습니다. 잠시 후 시도해 주세요", Toast.LENGTH_SHORT).show();
-    }
 }

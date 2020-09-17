@@ -10,4 +10,7 @@ public interface RetrofitService {
     Call<ResponseBody> userInfo(
             @Query("q") String q,
             @Query("page") int page);
+
+    @GET("orgs")
+    Call<ResponseBody> orgInfo();
 }
