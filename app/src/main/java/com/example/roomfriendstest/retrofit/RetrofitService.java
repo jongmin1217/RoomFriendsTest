@@ -8,5 +8,6 @@ import retrofit2.http.Query;
 public interface RetrofitService {
     @GET("users")
     Call<ResponseBody> userInfo(
-            @Query("q") String q);
+            @Query("q") String q,
+            @Query("page") int page);
 }

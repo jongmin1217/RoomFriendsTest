@@ -2,9 +2,16 @@ package com.example.roomfriendstest.activity;
 
 import android.util.Log;
 
+import com.example.roomfriendstest.model.UserData;
+import com.example.roomfriendstest.recyclerview.UserAdapter;
 import com.example.roomfriendstest.retrofit.NetRetrofit;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -13,22 +20,45 @@ import retrofit2.Response;
 
 public class MainPresenter {
     private MainView view;
+    private UserData data;
+    private ArrayList<UserData> dataList;
+    private UserAdapter adapter;
 
-    public MainPresenter(MainView view){
+    public MainPresenter(MainView view, UserAdapter adapter){
         this.view = view;
+        this.adapter = adapter;
     }
 
-    public void userInfo(String search){
-        Call<ResponseBody> res = NetRetrofit.getInstance().getService().userInfo(search);
+    public void userInfo(String search,int page){
+        dataList = new ArrayList<>();
+        Call<ResponseBody> res = NetRetrofit.getInstance().getService().userInfo(search,page);
         res.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
                 try {
                     String result = response.body().string();
-                    Log.d("firebaseLog",result);
-                    view.result(result);
+                    JSONObject myChatroomObject = new JSONObject(result);
+                    JSONArray jsonArray = myChatroomObject.getJSONArray("items");
 
-                } catch (IOException e) {
+                    if (jsonArray.length() != 0) {
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject userListObject = jsonArray.getJSONObject(i);
+                            data = new UserData();
+                            data.setUserName(userListObject.getString("login"));
+                            data.setProfile(userListObject.getString("avatar_url"));
+                            data.setScore(userListObject.getString("score"));
+                            data.setOrganizationsUrl(userListObject.getString("organizations_url"));
+                            dataList.add(data);
+                        }
+                        adapter.getItem(dataList);
+                        view.screenVisible();
+                    }else{
+                        adapter.removeItem();
+                        view.noResult();
+                    }
+
+                } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -37,5 +67,9 @@ public class MainPresenter {
                 Log.e("Err", t.getMessage());
             }
         });
+    }
+
+    public void removeItem(){
+        adapter.removeItem();
     }
 }
