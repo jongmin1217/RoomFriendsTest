@@ -4,13 +4,62 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.MainActivity">
-
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+    tools:context=".activity.MainActivity"
+    android:background="#eeeeee">
+    <LinearLayout
+        android:id="@+id/search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal"
+        android:background="@drawable/search_bar_line"
+        >
+        <LinearLayout
+            android:id="@+id/editBox"
+            android:layout_width="0px"
+            android:layout_height="40dp"
+            android:layout_weight="4"
+            android:background="@drawable/edittextline"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="5dp">
+            <ImageView
+                android:id="@+id/imgSearch"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/search"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="5dp"/>
+            <EditText
+                android:id="@+id/editSearch"
+                android:layout_width="0px"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:textSize="14sp"
+                android:background="@android:color/transparent"
+                />
+            <ImageButton
+                android:src="@drawable/cancel"
+                android:scaleType="fitXY"
+                android:id="@+id/btnRemove"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="#00ff0000"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="5dp"
+                />
+        </LinearLayout>
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="0px"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="#00ff0000"
+            android:stateListAnimator="@null"
+            android:layout_marginTop="5dp"
+            android:text="@string/btnCancel"
+            android:textAllCaps="false"
+            android:textColor="#6666ff"/>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
