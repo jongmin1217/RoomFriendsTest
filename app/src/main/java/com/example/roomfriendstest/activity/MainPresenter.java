@@ -1,6 +1,7 @@
 package com.example.roomfriendstest.activity;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.roomfriendstest.model.UserData;
 import com.example.roomfriendstest.recyclerview.UserAdapter;
@@ -29,7 +30,7 @@ public class MainPresenter {
         this.adapter = adapter;
     }
 
-    public void userInfo(String search,int page){
+    public void userInfo(String search, final int page){
         dataList = new ArrayList<>();
         Call<ResponseBody> res = NetRetrofit.getInstance().getService().userInfo(search,page);
         res.enqueue(new Callback<ResponseBody>() {
@@ -37,27 +38,38 @@ public class MainPresenter {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
                 try {
-                    String result = response.body().string();
-                    JSONObject myChatroomObject = new JSONObject(result);
-                    JSONArray jsonArray = myChatroomObject.getJSONArray("items");
+                    if (response.body() != null) {
+                        String result = response.body().string();
+                        JSONObject myChatroomObject = new JSONObject(result);
+                        JSONArray jsonArray = myChatroomObject.getJSONArray("items");
 
-                    if (jsonArray.length() != 0) {
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject userListObject = jsonArray.getJSONObject(i);
-                            data = new UserData();
-                            data.setUserName(userListObject.getString("login"));
-                            data.setProfile(userListObject.getString("avatar_url"));
-                            data.setScore(userListObject.getString("score"));
-                            data.setOrganizationsUrl(userListObject.getString("organizations_url"));
-                            dataList.add(data);
+                        if (jsonArray.length() != 0) {
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject userListObject = jsonArray.getJSONObject(i);
+                                data = new UserData();
+                                data.setUserName(userListObject.getString("login"));
+                                data.setProfile(userListObject.getString("avatar_url"));
+                                data.setScore(userListObject.getString("score"));
+                                data.setOrganizationsUrl(userListObject.getString("organizations_url"));
+
+                                Log.d("scroll",userListObject.getString("login"));
+                                dataList.add(data);
+                            }
+                            if(page==1){
+                                adapter.getItem(dataList);
+                                view.screenVisible();
+                            }else{
+                                adapter.addItem(dataList);
+                            }
+                        }else{
+                            if(page==1){
+                                adapter.removeItem();
+                                view.noResult();
+                            }
                         }
-                        adapter.getItem(dataList);
-                        view.screenVisible();
                     }else{
-                        adapter.removeItem();
-                        view.noResult();
+                        view.responseError();
                     }
-
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }

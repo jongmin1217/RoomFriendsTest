@@ -59,6 +59,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ItemViewHolder
         notifyDataSetChanged();
     }
 
+    public void addItem(ArrayList<UserData> listData){
+        this.listData.addAll(listData);
+        notifyItemRangeInserted(getItemCount(),listData.size());
+    }
+
     public class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private UserData userData;
 

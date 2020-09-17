@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.roomfriendstest.R;
 import com.example.roomfriendstest.recyclerview.UserAdapter;
@@ -136,13 +137,11 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 @Override
                 public void onScrollChange(View view, int i, int i1, int i2, int i3) {
                     int previousScroll = 0;
-                    if (previousScroll != i3) {
-                        removeKeybord();
-                    }
+                    if (previousScroll != i3) { removeKeybord(); }
                     int lastVisibleItemPosition = ((LinearLayoutManager) Objects.requireNonNull(userRecyclerview.getLayoutManager())).findLastCompletelyVisibleItemPosition();
                     int itemTotalCount = Objects.requireNonNull(userRecyclerview.getAdapter()).getItemCount() - 1;
-                    if (lastVisibleItemPosition == itemTotalCount && userRecyclerview.getAdapter().getItemCount() != 0) {
-                        Log.d("scroll", "last Position...");
+                    if (lastVisibleItemPosition == itemTotalCount && userRecyclerview.getAdapter().getItemCount() > 29) {
+                        presenter.userInfo(editSearch.getText().toString(), ++page);
                     }
 
                 }
@@ -164,5 +163,10 @@ public class MainActivity extends AppCompatActivity implements MainView {
     @Override
     public void noResult() {
         textSearch.setText(R.string.noResult);
+    }
+
+    @Override
+    public void responseError() {
+        Toast.makeText(this, "너무 많이 요청하였습니다. 잠시 후 시도해 주세요", Toast.LENGTH_SHORT).show();
     }
 }

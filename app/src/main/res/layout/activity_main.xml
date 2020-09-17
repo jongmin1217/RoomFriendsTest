@@ -79,6 +79,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/userRecyclerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/search_bar"/>
+        android:layout_height="0px"
+        app:layout_constraintTop_toBottomOf="@+id/search_bar"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
