@@ -33,9 +33,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ItemViewHolder
         return users.size();
     }
 
-    public void setItem(ArrayList<UserList> users){
-        this.users.addAll(users);
-        notifyDataSetChanged();
+    public void setItem(ArrayList<UserList> users, int pageNum){
+        if(pageNum==1){
+            this.users = users;
+            notifyDataSetChanged();
+        }else{
+            this.users.addAll(users);
+            notifyItemRangeInserted(getItemCount()-users.size(),getItemCount());
+        }
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder{

@@ -5,9 +5,6 @@
     xmlns:bind = "http://schemas.android.com/apk/res-auto">
     <data>
         <variable
-            name="userInfo"
-            type="com.example.roomfriendstest.view.UserInfoViewModel"/>
-        <variable
             name="main"
             type="com.example.roomfriendstest.view.MainActivity"/>
     </data>
@@ -48,9 +45,9 @@
                     android:layout_height="match_parent"
                     android:textSize="14sp"
                     android:background="@android:color/transparent"
-                    />
+                    tools:ignore="NestedWeights" />
                 <ImageButton
-                    android:onClick="@{main::onClick}"
+                    android:onClick="@{main::clearClick}"
                     android:src="@drawable/cancel"
                     android:scaleType="fitXY"
                     android:id="@+id/btn_clear"
@@ -63,7 +60,7 @@
                     />
             </LinearLayout>
             <Button
-                android:onClick="@{userInfo::onClick}"
+                android:onClick="@{main::hideClick}"
                 android:id="@+id/btn_hide"
                 android:layout_width="0px"
                 android:layout_height="40dp"
@@ -76,24 +73,41 @@
                 android:textColor="#6666ff"/>
         </LinearLayout>
         <TextView
-            android:id="@+id/textSearch"
+            android:id="@+id/text_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/search_linear"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:textSize="14sp"
-            android:text="@string/search"
+            android:text="@{main.notifyText}"
             android:textColor="#000000"
             android:background="#eeeeee"
             android:visibility="invisible"
             />
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/userRecyclerview"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="vertical"
+            android:id="@+id/user_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="0px"
             app:layout_constraintTop_toBottomOf="@+id/search_linear"
             app:layout_constraintBottom_toBottomOf="parent"
             bind:verAdapter="@{main.getAdapter()}"/>
+        <TextView
+            android:id="@+id/text_loding"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/loading_line"
+            android:text="@string/loading"
+            android:textColor="#000000"
+            android:textSize="15sp"
+            android:gravity="center"
+            android:visibility="invisible"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
