@@ -3,6 +3,7 @@ package com.example.roomfriendstest.view;
 import android.annotation.SuppressLint;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.roomfriendstest.data.UserData.UserList;
@@ -15,6 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ItemViewHolder> {
     private ArrayList<UserList> users = new ArrayList<>();
+    private Listener listener;
+
+    public UserAdapter(Listener listener){
+        this.listener = listener;
+    }
 
     @NonNull
     @Override
@@ -55,6 +61,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ItemViewHolder
         public void onBind(UserList userData) {
             binding.setUserdata(userData);
             binding.executePendingBindings();
+
+            OrganizationsAdapter adapter = new OrganizationsAdapter();
+            binding.organizationRecyclerview.setAdapter(adapter);
+
+            binding.profileImage.setOnClickListener(view -> {
+                if(binding.organizationRecyclerview.getVisibility()!=View.VISIBLE){
+                    listener.onItemClick(userData.getLogin(),adapter);
+                    binding.organizationRecyclerview.setVisibility(View.VISIBLE);
+                }else binding.organizationRecyclerview.setVisibility(View.GONE);
+            });
         }
     }
+
 }

@@ -19,7 +19,7 @@ public class NetRetrofit {
     }
 
     Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("https://api.github.com/search/")
+            .baseUrl("https://api.github.com/")
             .addConverterFactory(GsonConverterFactory.create()) // 파싱등록
             .build();
 

@@ -1,5 +1,10 @@
 package com.example.roomfriendstest.data;
 
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
+
+import com.example.roomfriendstest.view.OrganizationsAdapter;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -21,6 +26,8 @@ public class UserData {
         public String getAvatar_url() { return avatar_url; }
         public String getLogin() { return login; }
         public String getScore() { return score; }
+
+
     }
 
 
