@@ -38,7 +38,6 @@ public class OrganizationsAdapter extends RecyclerView.Adapter<OrganizationsAdap
     public void setItem(ArrayList<OrganizationsData> users) {
         this.users = users;
         notifyDataSetChanged();
-
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -51,7 +50,6 @@ public class OrganizationsAdapter extends RecyclerView.Adapter<OrganizationsAdap
 
         @SuppressLint("SetTextI18n")
         public void onBind(OrganizationsData userData) {
-            Log.d("qweqwe",userData.getAvatar_url());
             binding.setUserdata(userData);
             binding.executePendingBindings();
         }

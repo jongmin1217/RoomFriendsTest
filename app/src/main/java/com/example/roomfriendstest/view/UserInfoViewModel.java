@@ -1,20 +1,13 @@
 package com.example.roomfriendstest.view;
 
-import android.provider.ContactsContract;
-import android.text.Editable;
 import android.util.Log;
-import android.view.View;
 
 import com.example.roomfriendstest.data.OrganizationsData;
 import com.example.roomfriendstest.data.UserData.UserList;
 import com.example.roomfriendstest.data.UserData;
 import com.example.roomfriendstest.api.NetRetrofit;
 import com.example.roomfriendstest.util.Event;
-
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -29,6 +22,7 @@ public class UserInfoViewModel extends ViewModel {
 
     private Call<UserData> userRes;
     private Call<ArrayList<OrganizationsData>> orgRes;
+
 
     public LiveData<ArrayList<UserList>> getUsers() {
         if (users == null)  users = new MutableLiveData<>();
@@ -51,7 +45,6 @@ public class UserInfoViewModel extends ViewModel {
                     users.setValue(resource.items);
                 }else{
                     showErrorToast.setValue(new Event(true));
-                    Log.d("qweqwe","failed");
                 }
             }
             @Override
@@ -63,7 +56,6 @@ public class UserInfoViewModel extends ViewModel {
 
     public void getOrganizations(String login){
         String url = "users/"+login+"/orgs";
-        Log.d("qweqwe",url);
         if(orgRes != null) orgRes.cancel();
         orgRes = NetRetrofit.getInstance().getService().organizationsInfo(url);
         orgRes.enqueue(new Callback<ArrayList<OrganizationsData>>() {
@@ -74,13 +66,11 @@ public class UserInfoViewModel extends ViewModel {
                     organizationsUsers.setValue(resource);
                 }else{
                     showErrorToast.setValue(new Event(true));
-                    Log.d("qweqwe","failed");
                 }
             }
             @Override
             public void onFailure(Call<ArrayList<OrganizationsData>> call, Throwable t) {
                 t.printStackTrace();
-                Log.d("qweqwe","error "+t);
             }
         });
     }

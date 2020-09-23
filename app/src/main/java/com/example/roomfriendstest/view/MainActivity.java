@@ -18,15 +18,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.example.roomfriendstest.R;
-import com.example.roomfriendstest.data.UserData.UserList;
 import com.example.roomfriendstest.databinding.ActivityMainBinding;
-import com.example.roomfriendstest.databinding.RecyclerviewUserinfoBinding;
 
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements Listener{
+public class MainActivity extends AppCompatActivity implements Listener {
 
     private InputMethodManager imm;
     private ActivityMainBinding binding;
@@ -35,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private UserInfoViewModel viewModel;
     private Timer timer;
     private int page;
+    private int clickPosition;
     private boolean lastPage = false;
     public String notifyText = "Searching...";
 
@@ -67,12 +66,17 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     showNotiSceen(true, false);
                     setNotifyText("No Result");
                 } else lastPage = true;
-            } else showNotiSceen(false, true);
+            } else {
+                if(!binding.editSearch.getText().toString().equals("")) showNotiSceen(false, true);
+            }
             hideView(binding.textLoding);
         });
         viewModel.getOrganizationsUsers().observe(this, organizationsUsers -> {
-            Log.d("qweqwe","size "+organizationsUsers.size());
-            orgAdapter.setItem(organizationsUsers);
+            if (organizationsUsers.size() != 0) {
+                adapter.users.get(clickPosition).setUsers(organizationsUsers);
+                adapter.users.get(clickPosition).setOrgVisible(true);
+                orgAdapter.setItem(organizationsUsers);
+            }
         });
         viewModel.showErrorToast.observe(this, showErrorToast -> {
             Toast.makeText(this, "너무 많이 요청하였습니다. 잠시후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show();
@@ -99,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
             @Override
             public void afterTextChanged(Editable editable) {
+                page = 1;
                 setNotifyText("Searching...");
                 showNotiSceen(true, false);
                 if (!editable.toString().equals("")) {
@@ -107,11 +112,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            page = 1;
                             lastPage = false;
                             viewModel.getUserInfo(editable.toString(), page);
                         }
-                    }, 1000);
+                    }, 200);
                 } else {
                     hideView(binding.btnClear);
                     showNotiSceen(false, false);
@@ -131,15 +135,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 int itemTotalCount = Objects.requireNonNull(binding.userRecyclerview.getAdapter()).getItemCount() - 1;
                 if (lastVisibleItemPosition == itemTotalCount && binding.userRecyclerview.getAdapter().getItemCount() % 30 == 0 && !lastPage) {
                     showView(binding.textLoding);
-                    Thread thread = new Thread(() -> {
-                        try {
-                            Thread.sleep(1000);
-                            viewModel.getUserInfo(binding.editSearch.getText().toString(), ++page);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                    thread.start();
+                    viewModel.getUserInfo(binding.editSearch.getText().toString(), ++page);
                 }
 
             });
@@ -187,8 +183,14 @@ public class MainActivity extends AppCompatActivity implements Listener{
     }
 
     @Override
-    public void onItemClick(String login,OrganizationsAdapter orgAdapter) {
+    public void onItemClick(String login, OrganizationsAdapter orgAdapter, int clickPosition) {
         this.orgAdapter = orgAdapter;
+        this.clickPosition = clickPosition;
         viewModel.getOrganizations(login);
+    }
+
+    @Override
+    public void scroll(int position) {
+        binding.userRecyclerview.scrollToPosition(position);
     }
 }

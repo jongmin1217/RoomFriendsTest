@@ -11,6 +11,7 @@ import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 public interface RetrofitService {
+
     @GET("search/users")
     Call<UserData> userInfo(
             @Query("q") String q,

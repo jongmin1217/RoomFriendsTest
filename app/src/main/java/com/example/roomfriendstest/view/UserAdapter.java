@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ItemViewHolder> {
-    private ArrayList<UserList> users = new ArrayList<>();
+    public ArrayList<UserList> users = new ArrayList<>();
     private Listener listener;
 
     public UserAdapter(Listener listener){
@@ -43,14 +43,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ItemViewHolder
         if(pageNum==1){
             this.users = users;
             notifyDataSetChanged();
+            listener.scroll(0);
         }else{
             this.users.addAll(users);
             notifyItemRangeInserted(getItemCount()-users.size(),getItemCount());
+            listener.scroll(getItemCount()-users.size());
         }
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder{
         private RecyclerviewUserinfoBinding binding;
+        private OrganizationsAdapter adapter;
 
         public ItemViewHolder(RecyclerviewUserinfoBinding binding) {
             super(binding.getRoot());
@@ -62,16 +65,26 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ItemViewHolder
             binding.setUserdata(userData);
             binding.executePendingBindings();
 
-            OrganizationsAdapter adapter = new OrganizationsAdapter();
+            adapter = new OrganizationsAdapter();
             binding.organizationRecyclerview.setAdapter(adapter);
 
-            binding.profileImage.setOnClickListener(view -> {
-                if(binding.organizationRecyclerview.getVisibility()!=View.VISIBLE){
-                    listener.onItemClick(userData.getLogin(),adapter);
+            if(!userData.getOrgVisible()){
+                binding.organizationRecyclerview.setVisibility(View.GONE);
+            }else{
+                binding.organizationRecyclerview.setVisibility(View.VISIBLE);
+                adapter.setItem(userData.getUsers());
+            }
+            binding.layout.setOnClickListener(view -> {
+                if(binding.organizationRecyclerview.getVisibility()==View.GONE){
+                    if(userData.getUsers()==null){
+                        listener.onItemClick(userData.getLogin(),adapter,getAdapterPosition());
+                    }else adapter.setItem(userData.getUsers());
                     binding.organizationRecyclerview.setVisibility(View.VISIBLE);
-                }else binding.organizationRecyclerview.setVisibility(View.GONE);
+                }else {
+                    binding.organizationRecyclerview.setVisibility(View.GONE);
+                    userData.setOrgVisible(false);
+                }
             });
         }
     }
-
 }
